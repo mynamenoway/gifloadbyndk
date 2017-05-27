@@ -17,10 +17,9 @@ public class GifLoader {
     private final static String TAG = "GifLoader";
     private static volatile GifLoader mGifLoader;
     private static volatile Context mContext;
-    private static final int MAXSIZE = 4 * 1024 * 1024;
-    private static final String FRAGMENT_TAG="com.suipo.gifloader.suipugifloader";
+
     private long mGifHandler;
-    public Map<ImageView, GifDrawer> mGifDrawers;
+
 
     static {
         System.loadLibrary("native-lib");
@@ -32,12 +31,7 @@ public class GifLoader {
     public static native int getHeight(long GifHandler);
 
     private GifLoader() {
-        mGifDrawers = new LinkedHashMap<ImageView, GifDrawer>(MAXSIZE, 0.75f, true){
-            @Override
-            protected boolean removeEldestEntry(Entry<ImageView, GifDrawer> eldest) {
-                return size() > 10;
-            }
-        };
+
     }
     public static GifLoader with(Context context) {
         mContext = context;
@@ -51,25 +45,6 @@ public class GifLoader {
         return mGifLoader;
     }
 
-    public GifDrawer load(ImageView imageView) {
-        Log.d(TAG, "" + imageView);
-        GifDrawer gifDrawer = mGifDrawers.get(imageView);
-        if (gifDrawer == null) {
-            gifDrawer = new MovieGifDrawer(mContext, imageView);
-            mGifDrawers.put(imageView, gifDrawer);
-        }
-        return gifDrawer;
-    }
-
-    public GifDrawer loadc(ImageView imageView) {
-        Log.d(TAG, "" + imageView);
-        GifDrawer gifDrawer = mGifDrawers.get(imageView);
-        if (gifDrawer == null) {
-            gifDrawer = new NdkGifDrawer(mContext, imageView);
-            mGifDrawers.put(imageView, gifDrawer);
-        }
-        return gifDrawer;
-    }
     public GifLoader load(String path) {
         Log.d(TAG, "" + path);
         mGifHandler = loadGIFc(path);
